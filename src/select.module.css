@@ -5,43 +5,61 @@ body {
 .container {
     position: relative;
     width: 20em;
-    min-height: 1.5em; /* adding this would allow height gaps when new row appears */
+    min-height: 1.5em;
     border: .05em solid #777;
-    border-radius: 0.25em;
     display: flex;
     align-items: center;
     gap: .5em;
     padding: .5em;
+    border-radius: .25em;
     outline: none;
-}
-
-.container:focus {
+  }
+  
+  .container:focus {
     border-color: hsl(200, 100%, 50%);
-}
-
-.value {
+  }
+  
+  .value {
     flex-grow: 1;
-}
-
-.divider {
+    display: flex;
+    gap: .5em;
+    flex-wrap: wrap;
+  }
+  
+  .clear-btn {
+    background: none;
+    color: #777;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 0;
+    font-size: 1.25em;
+  }
+  
+  .clear-btn:focus,
+  .clear-btn:hover {
+    color: #333;
+  }
+  
+  .divider {
     background-color: #777;
-    align-self: stretch; /* instead of using height 100% (unable to determine what 100% is since min-height is used in container) strethcing is better*/
+    align-self: stretch;
     width: .05em;
-}
-
-.caret {
-    translate: 0 25% ;
+  }
+  
+  .caret {
+    translate: 0 25%;
     border: .25em solid transparent;
     border-top-color: #777;
-}
-
-.options{
+  }
+  
+  .options {
     position: absolute;
     margin: 0;
     padding: 0;
     list-style: none;
     display: none;
-    max-height: 15em; /* this will allow list items to be overflowed*/
+    max-height: 15em;
     overflow-y: auto;
     border: .05em solid #777;
     border-radius: .25em;
@@ -50,13 +68,13 @@ body {
     top: calc(100% + .25em);
     background-color: white;
     z-index: 100;
-
-}
-.options.show {
+  }
+  
+  .options.show {
     display: block;
-} 
-
-.option {
+  }
+  
+  .option {
     padding: .25em .5em;
     cursor: pointer;
   }
@@ -69,17 +87,31 @@ body {
     background-color: hsl(200, 100%, 50%);
     color: white
   }
-
-
-.clear-btn{
-    background: none;
-    color:#777;
-    border: none;
+  
+  .option-badge {
+    display: flex;
+    align-items: center;
+    border: .05em solid #777;
+    border-radius: .25em;
+    padding: .15em .25em;
+    gap: .25em;
     cursor: pointer;
-    padding: 0;
+    background: none;
+    outline: none;
+  }
+  
+  .option-badge:hover,
+  .option-badge:focus {
+    background-color: hsl(0, 100%, 90%);
+    border-color: hsl(0, 100%, 50%);
+  }
+  
+  .option-badge:hover > .remove-btn,
+  .option-badge:focus > .remove-btn{
+    color: hsl(0, 100%, 50%);
+  }
+  
+  .option-badge > .remove-btn {
     font-size: 1.25em;
-}
-
-.clear-btn:focus, .clear-btn:hover {
-    color: #333;
-}
+    color: #777;
+  }

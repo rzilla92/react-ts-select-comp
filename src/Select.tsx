@@ -2,35 +2,50 @@ import { useState , useEffect } from 'react'
 import styles from "./select.module.css"
 
 
-type SelectOption = {
+export type SelectOption = {
     label: string
-    value: string |  number
+    value: string | number
+}
+
+type MultipleSelectProps = {
+    multiple: true
+    value: SelectOption[]                                    //array of options selection
+    onChange: (value: SelectOption[]) => void               //function that passes value of options
+}
+
+type SingleSelectProps = {
+    multiple?: false
+    value?: SelectOption                                    //current option selection or empty
+    onChange: (value: SelectOption | undefined) => void     //function that passes value of options
 }
 
 type SelectProps = {
-    options: SelectOption[] //array of different options
-    value?: SelectOption //current option selection or empty
-    onChange: (value: SelectOption | undefined) => void//function that passes value of options
-}
+    options: SelectOption[]                                 //array of different options
+    } & (SingleSelectProps | MultipleSelectProps)           //coniditional type dependent on multiple prop
 
 
-function Select({ value, onChange, options} : SelectProps) {
-    const [isOpen,setIsOpen] = useState(false) //toggle list
+export function Select({ multiple, value, onChange, options}: SelectProps) {
+    const [isOpen,setIsOpen] = useState(false)              //toggle list
     const [highlightedIndex, setHighlightedIndex] = useState(0) //setting default highlighted index to 0, when mouse enters and move to other index, state will change
 
     function clearOptions(){
-        onChange(undefined)
+        multiple ? onChange([]) : onChange(undefined)
     }
 
-    function selectOption(option: SelectOption){
-        // following conditional will only call onChange when value changes
-        if(option !== value) {
-            onChange(option)
+    function selectOption(option: SelectOption) {
+        if (multiple) {                                     // only call onChange when value changes
+          if (value.includes(option)) {                     // remove duplicate selection i.e if array already has selected option, remove it
+            onChange(value.filter(o => o !== option))
+          } else {
+            onChange([...value, option])
+          }
+        } else {
+          if (option !== value) onChange(option)
         }
-    }
+      }
 
     function isOptionSelected(option: SelectOption){
-        return option === value
+        return multiple ? value.includes(option) : option === value
     }
 
     useEffect(() => {
@@ -46,7 +61,21 @@ function Select({ value, onChange, options} : SelectProps) {
         tabIndex={0} 
         className={styles.container}>
             <span className={styles.value}>
-                {value?.label}
+                {multiple
+                ? value.map(v => (
+                    <button
+                    key={v.value}
+                    onClick={e => {
+                        e.stopPropagation()
+                        selectOption(v)
+                        }}
+                    className={styles["option-badge"]}
+                    >
+                        {v.label}
+                        <span className={styles["remove-btn"]}>&times;</span>
+                    </button>
+                ))
+                : value?.label}
             </span>
             <button
             onClick={e => {
@@ -55,7 +84,7 @@ function Select({ value, onChange, options} : SelectProps) {
             className={styles["clear-btn"]}>&times;</button>
             <div className={styles.divider}></div>
             <div className={styles.caret}></div>
-            <ul className={`${styles.options} ${isOpen ? styles.show : ''}`}>
+            <ul className={`${styles.options} ${isOpen ? styles.show : ""}`}>
                 {options.map((option, index) => (
                     <li
                     onClick={e => {
@@ -65,9 +94,8 @@ function Select({ value, onChange, options} : SelectProps) {
                     }}
                     onMouseEnter={() => setHighlightedIndex(index)}
                     key ={option.value}
-                    className={`
-                        ${styles.option} 
-                        ${isOptionSelected(option) ? styles.selected : ""}          //option selected conditional
+                    className={`${styles.option} ${
+                        isOptionSelected(option) ? styles.selected : ""}          //option selected conditional
                         ${index === highlightedIndex ? styles.highlighted : ""}     //option highlight conditional
                     `}>
                     {option.label}
@@ -79,4 +107,3 @@ function Select({ value, onChange, options} : SelectProps) {
 }
 
 
-export default Select
